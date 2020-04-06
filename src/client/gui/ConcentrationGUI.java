@@ -7,6 +7,7 @@ import client.model.Observer;
 import common.ConcentrationException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
@@ -33,7 +34,7 @@ import java.util.*;
 public class ConcentrationGUI extends Application implements Observer<ConcentrationModel, ConcentrationModel.CardUpdate> {
     private ConcentrationModel model;
     private ConcentrationController controller;
-    private HashMap pokemonMap;
+    private HashMap<String, Image> pokemonMap;
     private Button[][] pokemonArray;
     private GridPane gridPane;
     private BorderPane borderPane;
@@ -41,27 +42,34 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
     private Label matchesLabel;
     private Label statusLabel;
     private boolean toggle = false;
-
-    private Image a = new Image(getClass().getResourceAsStream("abra.png"));
-    private Image b = new Image(getClass().getResourceAsStream("bulbasaur.png"));
-    private Image c = new Image(getClass().getResourceAsStream("charizard.png"));
-    private Image d = new Image(getClass().getResourceAsStream("diglett.png"));
-    private Image e = new Image(getClass().getResourceAsStream("golbat.png"));
-    private Image f = new Image(getClass().getResourceAsStream("golem.png"));
-    private Image g = new Image(getClass().getResourceAsStream("jigglypuff.png"));
-    private Image h = new Image(getClass().getResourceAsStream("magikarp.png"));
-    private Image i = new Image(getClass().getResourceAsStream("meowth.png"));
-    private Image j = new Image(getClass().getResourceAsStream("mewtwo.png"));
-    private Image k = new Image(getClass().getResourceAsStream("natu.png"));
-    private Image l = new Image(getClass().getResourceAsStream("pidgey.png"));
-    private Image m = new Image(getClass().getResourceAsStream("pikachu.png"));
     private Image pokeball = new Image(getClass().getResourceAsStream("pokeball.png"));
-    private Image n = new Image(getClass().getResourceAsStream("poliwag.png"));
-    private Image o = new Image(getClass().getResourceAsStream("psyduck.png"));
-    private Image p = new Image(getClass().getResourceAsStream("rattata.png"));
-    private Image q = new Image(getClass().getResourceAsStream("slowpoke.png"));
-    private Image r = new Image(getClass().getResourceAsStream("snorlak.png"));
-    private Image s = new Image(getClass().getResourceAsStream("squirtle.png"));
+    private static final Background WHITE =
+            new Background( new BackgroundFill(Color.WHITE, null, null));
+    private static final Background BLUE =
+            new Background( new BackgroundFill(Color.BLUE, null, null));
+
+    public class Updated implements Runnable{
+        private ConcentrationModel.CardUpdate card;
+
+        public Updated(ConcentrationModel.CardUpdate card){
+            this.card = card;
+        }
+        @Override
+        public void run() {
+            if (card != null){
+                if (card.isRevealed()){
+                    pokemonArray[card.getRow()][card.getCol()].setGraphic(new ImageView(pokemonMap.get(card.getVal())));
+                    pokemonArray[card.getRow()][card.getCol()].setBackground(WHITE);
+                    pokemonArray[card.getRow()][card.getCol()].setOnAction(null);
+                }
+                else{
+                    pokemonArray[card.getRow()][card.getCol()].setGraphic(new ImageView(pokeball));
+                    pokemonArray[card.getRow()][card.getCol()].setBackground(BLUE);
+                    pokemonArray[card.getRow()][card.getCol()].setOnAction(actionEvent -> controller.revealCard(card.getRow(), card.getCol()));
+                }
+            }
+        }
+    }
 
     private ConcentrationGUI(){
         List<String> pokemonList = new ArrayList<>(Arrays.asList("abra.png", "bulbasaur.png", "charizard.png", "diglett.png", "golbat.png", "golem.png", "jigglypuff.png", "magikarp.png", "meowth.png", "mewtwo.png", "natu.png", "pidgey.png", "pikachu.png", "poliwag.png", "psyduck.png", "rattata.png", "slowpoke.png", "snorlak.png", "squirtle.png"));
@@ -100,6 +108,11 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
         for (int i = 0; i < this.pokemonArray.length; i++){
             for (int i2 = 0; i2 < this.pokemonArray.length; i2++){
                 Button button = new Button();
+                button.setGraphic(new ImageView(pokeball));
+                button.setBackground(BLUE);
+                int finalI = i2;
+                int finalI1 = i;
+                button.setOnAction(actionEvent -> controller.revealCard(finalI1, finalI));
                 this.gridPane.add(button, i, i2);
             }
         }
@@ -145,9 +158,18 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
     }
 
 
+
     @Override
     public void update(ConcentrationModel model, ConcentrationModel.CardUpdate card) {
         // TODO
+        if (model.getStatus() == ConcentrationModel.Status.ERROR){
+            Platform.exit();
+        }
+        else{
+            if (toggle == true){
+                Platform.runLater(new Updated(card));
+            }
+        }
 
     }
 
