@@ -42,26 +42,35 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
     private Label statusLabel;
     private boolean toggle = false;
 
-    private Image abra = new Image(getClass().getResourceAsStream("abra.png"));
-    private Image bulbasaur = new Image(getClass().getResourceAsStream("bulbasaur.png"));
-    private Image charizard = new Image(getClass().getResourceAsStream("charizard.png"));
-    private Image diglett = new Image(getClass().getResourceAsStream("diglett.png"));
-    private Image golbat = new Image(getClass().getResourceAsStream("golbat.png"));
-    private Image golem = new Image(getClass().getResourceAsStream("golem.png"));
-    private Image jigglypuff = new Image(getClass().getResourceAsStream("jigglypuff.png"));
-    private Image magikarp = new Image(getClass().getResourceAsStream("magikarp.png"));
-    private Image meowth = new Image(getClass().getResourceAsStream("meowth.png"));
-    private Image mewtwo = new Image(getClass().getResourceAsStream("mewtwo.png"));
-    private Image natu = new Image(getClass().getResourceAsStream("natu.png"));
-    private Image pidgey = new Image(getClass().getResourceAsStream("pidgey.png"));
-    private Image pikachu = new Image(getClass().getResourceAsStream("pikachu.png"));
+    private Image a = new Image(getClass().getResourceAsStream("abra.png"));
+    private Image b = new Image(getClass().getResourceAsStream("bulbasaur.png"));
+    private Image c = new Image(getClass().getResourceAsStream("charizard.png"));
+    private Image d = new Image(getClass().getResourceAsStream("diglett.png"));
+    private Image e = new Image(getClass().getResourceAsStream("golbat.png"));
+    private Image f = new Image(getClass().getResourceAsStream("golem.png"));
+    private Image g = new Image(getClass().getResourceAsStream("jigglypuff.png"));
+    private Image h = new Image(getClass().getResourceAsStream("magikarp.png"));
+    private Image i = new Image(getClass().getResourceAsStream("meowth.png"));
+    private Image j = new Image(getClass().getResourceAsStream("mewtwo.png"));
+    private Image k = new Image(getClass().getResourceAsStream("natu.png"));
+    private Image l = new Image(getClass().getResourceAsStream("pidgey.png"));
+    private Image m = new Image(getClass().getResourceAsStream("pikachu.png"));
     private Image pokeball = new Image(getClass().getResourceAsStream("pokeball.png"));
-    private Image poliwag = new Image(getClass().getResourceAsStream("poliwag.png"));
-    private Image psyduck = new Image(getClass().getResourceAsStream("psyduck.png"));
-    private Image rattata = new Image(getClass().getResourceAsStream("rattata.png"));
-    private Image slowpoke = new Image(getClass().getResourceAsStream("slowpoke.png"));
-    private Image snorlax = new Image(getClass().getResourceAsStream("snorlak.png"));
-    private Image squirtle = new Image(getClass().getResourceAsStream("squirtle.png"));
+    private Image n = new Image(getClass().getResourceAsStream("poliwag.png"));
+    private Image o = new Image(getClass().getResourceAsStream("psyduck.png"));
+    private Image p = new Image(getClass().getResourceAsStream("rattata.png"));
+    private Image q = new Image(getClass().getResourceAsStream("slowpoke.png"));
+    private Image r = new Image(getClass().getResourceAsStream("snorlak.png"));
+    private Image s = new Image(getClass().getResourceAsStream("squirtle.png"));
+
+    private ConcentrationGUI(){
+        List<String> pokemonList = new ArrayList<>(Arrays.asList("abra.png", "bulbasaur.png", "charizard.png", "diglett.png", "golbat.png", "golem.png", "jigglypuff.png", "magikarp.png", "meowth.png", "mewtwo.png", "natu.png", "pidgey.png", "pikachu.png", "poliwag.png", "psyduck.png", "rattata.png", "slowpoke.png", "snorlak.png", "squirtle.png"));
+        Collections.shuffle(pokemonList);
+        this.pokemonMap = new HashMap();
+        for (int i = 0; i < pokemonList.size(); i++){
+            pokemonMap.put(Character.toString('A' + i), new Image(getClass().getResourceAsStream("images/" + pokemonList.get(i))));
+        }
+    }
 
 
 
@@ -86,7 +95,6 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
     }
 
     private GridPane makeGridPane(int dim){
-        this.pokemonMap = new HashMap();
         this.pokemonArray = new Button[dim][dim];
         this.gridPane = new GridPane();
         for (int i = 0; i < this.pokemonArray.length; i++){
