@@ -31,7 +31,16 @@ import java.util.*;
  * @author YOUR NAME HERE
  */
 public class ConcentrationGUI extends Application implements Observer<ConcentrationModel, ConcentrationModel.CardUpdate> {
+    private ConcentrationModel model;
+    private ConcentrationController controller;
     private HashMap pokemonMap;
+    private Button[][] pokemonArray;
+    private GridPane gridPane;
+    private BorderPane borderPane;
+    private Label movesLabel;
+    private Label matchesLabel;
+    private Label statusLabel;
+    private boolean toggle = false;
 
     private Image abra = new Image(getClass().getResourceAsStream("abra.png"));
     private Image bulbasaur = new Image(getClass().getResourceAsStream("bulbasaur.png"));
@@ -69,44 +78,69 @@ public class ConcentrationGUI extends Application implements Observer<Concentrat
 
         // create the model, and add ourselves as an observer
         // TODO
-        ConcentrationModel model = new ConcentrationModel();
-        model.addObserver(this);
+        this.model = new ConcentrationModel();
+        this.model.addObserver(this);
         // initiate the controller
         // TODO
-        ConcentrationController controller = new ConcentrationController(host, port, model);
+        this.controller = new ConcentrationController(host, port, this.model);
     }
 
-    private GridPane makeGridPane(){
+    private GridPane makeGridPane(int dim){
         this.pokemonMap = new HashMap();
+        this.pokemonArray = new Button[dim][dim];
+        this.gridPane = new GridPane();
+        for (int i = 0; i < this.pokemonArray.length; i++){
+            for (int i2 = 0; i2 < this.pokemonArray.length; i2++){
+                Button button = new Button();
+                this.gridPane.add(button, i, i2);
+            }
+        }
 
-        GridPane gridPane = new GridPane();
-        return gridPane;
+
+        return this.gridPane;
     }
 
 
-    private BorderPane makeBorderPane(ConcentrationModel.Status status, int moves, int matches){
-        BorderPane pane = new BorderPane();
-        Label label = new Label("Moves: " + moves + "       Matches: " + matches + "       Status: " + status);
-        pane.setCenter(makeGridPane());
-        pane.setBottom(label);
-        return pane;
+    private BorderPane makeBorderPane(){
+        this.borderPane = new BorderPane();
+        this.movesLabel = new Label("Moves: ");
+        this.matchesLabel = new Label("Matches: ");
+        this.statusLabel = new Label("Status: ");
+        this.borderPane.setLeft(movesLabel);
+        this.borderPane.setCenter(matchesLabel);
+        this.borderPane.setRight(statusLabel);
+        return this.borderPane;
+    }
+
+    private void borderUpdate(){
+        this.movesLabel.setText("Moves: " + this.model.getNumMoves());
+        this.matchesLabel.setText("Matches: " + this.model.getNumMatches());
+        this.statusLabel.setText("Status: " + this.model.getStatus());
     }
 
 
     @Override
     public void start(Stage stage) throws Exception {
         // TODO
-        ConcentrationModel model = new ConcentrationModel();
+        BorderPane border = makeBorderPane();
+        borderUpdate();
+        BorderPane globalPane = new BorderPane();
+        globalPane.setCenter(makeGridPane(this.model.getDIM()));
+        globalPane.setBottom(border);
 
-        Scene scene = new Scene(makeBorderPane(model.getStatus(), model.getNumMoves(), model.getNumMatches()));
+        Scene scene = new Scene(globalPane);
+        stage.setTitle("Concentration GUI");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+        toggle = true;
     }
 
 
     @Override
     public void update(ConcentrationModel model, ConcentrationModel.CardUpdate card) {
         // TODO
+
     }
 
     @Override
